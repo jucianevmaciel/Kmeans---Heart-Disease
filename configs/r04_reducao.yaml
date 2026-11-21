@@ -1,0 +1,26 @@
+rodada: R4
+pergunta: Reduzir a dimensão ajuda?
+herda_de: r03_k_inicializacao
+criterio: principal   # = decisao.criterio_principal (base.yaml)
+nota: >
+  O kbest escolhe as colunas usando o diagnóstico (f_classif), então fica fora da
+  disputa: aparece na tabela, mas não pode vencer. A silhueta no espaço do PCA não
+  é comparável com a do espaço original; o critério é o ARI.
+
+opcoes:
+  - nome: sem_reducao
+    pre: {reducao: none}
+  - nome: pca_2
+    pre: {reducao: pca_2}
+  - nome: pca_3
+    pre: {reducao: pca_3}
+  - nome: pca_5
+    pre: {reducao: pca_5}
+  - nome: pca_90pct
+    pre: {reducao: pca_0.9}
+  - nome: kbest_4
+    fora_da_disputa: true
+    pre: {reducao: kbest_4}
+  - nome: kbest_8
+    fora_da_disputa: true
+    pre: {reducao: kbest_8}

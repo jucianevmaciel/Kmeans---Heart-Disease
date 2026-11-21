@@ -1,0 +1,6 @@
+rodada: R6
+pergunta: Os grupos fazem sentido clínico?
+herda_de: r05b_reajuste_k
+# rodar: python -m src.perfil_grupos  e  python -m src.clusters_2d
+profundidade_arvore: 3     # árvore substituta que explica os grupos
+erros_svm: null            # opcional: CSV com coluna 'id' dos pacientes que o SVM errou

@@ -1,0 +1,23 @@
+rodada: R1
+pergunta: O escalonamento importa?
+herda_de: base
+criterio: principal   # = decisao.criterio_principal (base.yaml)
+nota: >
+  standard_all padroniza também as colunas 0/1 (one-hot e FastingBS). No K-Means o
+  peso de cada coluna na distância depende da escala dela. Cuidado: uma categoria
+  rara vira um valor grande depois de padronizada e ganha peso extra; conferir no
+  perfil dos grupos (R6). A silhueta não é comparável entre escalonamentos (espaços
+  diferentes), por isso o critério é o ARI.
+
+# ordem = desempate (a primeira empatada vence)
+opcoes:
+  - nome: nenhum
+    pre: {scaler: none}
+  - nome: standard
+    pre: {scaler: standard}
+  - nome: standard_all
+    pre: {scaler: standard_all}
+  - nome: minmax
+    pre: {scaler: minmax}
+  - nome: robust
+    pre: {scaler: robust}

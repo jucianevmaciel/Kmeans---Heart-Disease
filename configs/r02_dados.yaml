@@ -1,0 +1,23 @@
+rodada: R2
+pergunta: Como tratar os zeros, o atalho do colesterol e o Oldpeak negativo?
+herda_de: r01_escalonamento
+criterio: principal   # = decisao.criterio_principal (base.yaml)
+nota: >
+  O colesterol registrado como 0 está ligado ao diagnóstico (no SVM, 88% dos
+  zerados eram doentes), provavelmente pelo hospital de origem. Esse atalho AUMENTA
+  o ARI. Por isso a trava: nenhuma opção vence se algum grupo tiver mais que
+  decisao.trava_atalho de pacientes com colesterol ausente.
+
+opcoes:
+  - nome: mediana
+    pre: {zeros: mediana, oldpeak: manter, drop_cols: []}
+  - nome: sem_colesterol
+    pre: {zeros: remover_colesterol, oldpeak: manter, drop_cols: []}
+  - nome: sem_colesterol_fastingbs
+    pre: {zeros: remover_colesterol, oldpeak: manter, drop_cols: [FastingBS]}
+  - nome: mediana_flag
+    pre: {zeros: mediana_flag, oldpeak: manter, drop_cols: []}
+  - nome: oldpeak_zero
+    pre: {zeros: mediana, oldpeak: zero, drop_cols: []}
+  - nome: oldpeak_abs
+    pre: {zeros: mediana, oldpeak: abs, drop_cols: []}

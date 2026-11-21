@@ -1,0 +1,13 @@
+rodada: R3
+pergunta: Qual o número de grupos e qual inicialização?
+herda_de: r02_dados
+criterio: silhueta
+nota: >
+  O k NÃO é escolhido pelo ARI: o diagnóstico tem 2 classes e o ARI favorece k = 2,
+  o que tornaria a escolha circular. Decide a silhueta; Davies-Bouldin,
+  Calinski-Harabasz, inércia e ARI são relatados (python -m src.cotovelo).
+  Desempate: menor k e depois k-means++ (ordem da grade).
+
+grade:
+  modelo.k: [2, 3, 4, 5, 6, 7, 8]
+  modelo.init: [k-means++, random]

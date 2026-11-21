@@ -1,0 +1,23 @@
+# Configuração de partida. Cada rodada herda daqui (ou do vencedor da anterior)
+# e declara só o que muda.
+
+dados: data/raw/heart.csv   # base inteira (918 pacientes), sem divisão treino/teste
+sementes: 20          # execuções por opção (muda a semente do K-Means)
+
+pre:
+  zeros: mediana      # mediana | mediana_flag | remover_colesterol
+  oldpeak: manter     # manter | abs | zero
+  drop_cols: []       # colunas removidas, ex.: [FastingBS]
+  scaler: standard    # none | standard | standard_all | minmax | robust
+  reducao: none       # none | pca_<n> | kbest_<n>   (pca_0.9 = 90% da variância)
+
+modelo:
+  algoritmo: kmeans   # kmeans | gmm | ward   (dummy | logreg | gboost só na R0)
+  k: 2
+  init: k-means++     # k-means++ | random
+  n_init: 10
+
+decisao:
+  criterio_principal: ari   # ari (opção A); vale para R1, R2, R4 e R5. O k usa a silhueta (R3, R5b)
+  estabilidade_min: 0.80    # ARI médio mínimo entre sementes
+  trava_atalho: 0.50        # nenhum grupo pode ter mais que 50% de colesterol ausente

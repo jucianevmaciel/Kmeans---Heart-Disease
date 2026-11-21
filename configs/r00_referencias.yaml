@@ -1,0 +1,25 @@
+rodada: R0
+pergunta: Quais são as referências?
+herda_de: base
+criterio: null        # sem escolha
+nota: >
+  As referências supervisionadas usam o diagnóstico no treino (validação cruzada
+  5 dobras, previsões fora da dobra). Servem de teto para o K-Means, que não vê o
+  rótulo. Todas são comparadas pelas mesmas métricas: ARI, pureza e AUC do escore.
+
+opcoes:
+  - nome: dummy
+    supervisionado: true
+    modelo: {algoritmo: dummy}
+  - nome: regressao_logistica
+    supervisionado: true
+    modelo: {algoritmo: logreg}
+  - nome: gradient_boosting
+    supervisionado: true
+    modelo: {algoritmo: gboost}
+  - nome: kmeans_k2
+    modelo: {algoritmo: kmeans, k: 2}
+  - nome: gmm_k2
+    modelo: {algoritmo: gmm, k: 2}
+  - nome: ward_k2
+    modelo: {algoritmo: ward, k: 2}

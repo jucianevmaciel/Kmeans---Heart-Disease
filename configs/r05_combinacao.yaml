@@ -1,0 +1,17 @@
+rodada: R5
+pergunta: Os vencedores funcionam juntos?
+herda_de: r04_reducao
+criterio: principal   # = decisao.criterio_principal (base.yaml)
+nota: >
+  "completa" é o vencedor acumulado de R1–R4, com o k da R3. Cada "sem_*" volta um
+  vencedor ao valor da base. As retiradas vêm primeiro na ordem de desempate: se
+  uma delas empatar com a completa, vence a versão com menos componentes.
+  Retiradas que não mudam nada (o vencedor já era o valor da base) são ignoradas.
+  O k é reajustado depois, na R5b, pela silhueta: aqui o critério é o ARI, que
+  favorece k = 2, e reajustar o k por ele tornaria a escolha circular.
+
+ablacao:
+  sem_escalonamento_vencedor: [pre.scaler]
+  sem_tratamento_dados: [pre.zeros, pre.oldpeak, pre.drop_cols]
+  sem_reducao: [pre.reducao]
+  sem_inicializacao_vencedora: [modelo.init]

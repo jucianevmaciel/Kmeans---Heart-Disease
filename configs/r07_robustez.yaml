@@ -1,0 +1,6 @@
+rodada: R7
+pergunta: Os grupos são estáveis?
+herda_de: r05b_reajuste_k
+# rodar: python -m src.robustez
+bootstrap: 100             # reamostragens dos pacientes
+subgrupos: [Sex, colesterol_ausente]

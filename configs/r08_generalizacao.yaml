@@ -1,0 +1,11 @@
+rodada: R8
+pergunta: A avaliação sem divisão treino/teste é otimista?
+herda_de: r05b_reajuste_k
+# rodar: python -m src.generalizacao
+# Não escolhe nada. Compara a configuração final avaliada na base inteira ("dentro")
+# com a avaliação em pacientes fora do ajuste ("fora"), por validação cruzada.
+# Mesmo protocolo do SVM-Infarto: estratificada 5x5, semente 42.
+dobras: 5
+repeticoes: 5
+semente_cv: 42
+referencias: [logreg, gboost]   # rodam nas mesmas dobras, para comparar a AUC
