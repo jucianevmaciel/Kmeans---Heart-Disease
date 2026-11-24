@@ -1,8 +1,9 @@
 # Configuração de partida. Cada rodada herda daqui (ou do vencedor da anterior)
-# e declara só o que muda.
+# e declara só o que muda. Do vencedor só se herdam 'pre' e 'modelo': 'sementes',
+# 'dados' e 'decisao' vêm sempre deste arquivo.
 
 dados: data/raw/heart.csv   # base inteira (918 pacientes), sem divisão treino/teste
-sementes: 20          # execuções por opção (muda a semente do K-Means)
+sementes: 20          # ajustes na base inteira por opção (diagnóstico; a decisão usa o bootstrap)
 
 pre:
   zeros: mediana      # mediana | mediana_flag | remover_colesterol
@@ -15,9 +16,16 @@ modelo:
   algoritmo: kmeans   # kmeans | gmm | ward   (dummy | logreg | gboost só na R0)
   k: 2
   init: k-means++     # k-means++ | random
-  n_init: 10
+  n_init: 50          # 50 inicializações: a semente quase não muda o resultado
 
 decisao:
-  criterio_principal: ari   # ari (opção A); vale para R1, R2, R4 e R5. O k usa a silhueta (R3, R5b)
-  estabilidade_min: 0.80    # ARI médio mínimo entre sementes
-  trava_atalho: 0.50        # nenhum grupo pode ter mais que 50% de colesterol ausente
+  criterio_principal: ari   # R1, R4 e R5. A R2 usa ari_registrado; o k (R3, R5b) usa a silhueta
+  bootstrap: 100            # reamostras (as mesmas em todas as opções = comparação pareada)
+  semente_bootstrap: 0
+  nivel_ic: 0.95            # empate se o IC da diferença para a melhor contém zero
+  jaccard_min: 0.75         # Jaccard médio mínimo em TODOS os grupos (Hennig, 2007)
+  trava_atalho_lift: 2.0    # % de colesterol ausente no grupo / % na base (18,7%)
+  trava_categoria:          # nenhum grupo formado por uma única categoria rara
+    concentracao: 0.90      #   >= 90% do grupo na mesma categoria...
+    prevalencia_max: 0.20   #   ...que tenha < 20% da base
+  permutacoes_nula: 10      # silhueta de referência (colunas embaralhadas)

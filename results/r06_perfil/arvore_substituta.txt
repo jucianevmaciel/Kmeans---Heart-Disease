@@ -1,0 +1,24 @@
+Fidelidade (acerto da árvore ao prever o grupo): 95.2%
+
+|--- ST_Slope_Up <= 0.50
+|   |--- ChestPainType_ATA <= 0.50
+|   |   |--- MaxHR <= 155.50
+|   |   |   |--- class: grupo 0
+|   |   |--- MaxHR >  155.50
+|   |   |   |--- class: grupo 0
+|   |--- ChestPainType_ATA >  0.50
+|   |   |--- ExerciseAngina_Y <= 0.50
+|   |   |   |--- class: grupo 1
+|   |   |--- ExerciseAngina_Y >  0.50
+|   |   |   |--- class: grupo 0
+|--- ST_Slope_Up >  0.50
+|   |--- ExerciseAngina_Y <= 0.50
+|   |   |--- MaxHR <= 88.00
+|   |   |   |--- class: grupo 0
+|   |   |--- MaxHR >  88.00
+|   |   |   |--- class: grupo 1
+|   |--- ExerciseAngina_Y >  0.50
+|   |   |--- MaxHR <= 150.50
+|   |   |   |--- class: grupo 0
+|   |   |--- MaxHR >  150.50
+|   |   |   |--- class: grupo 1

@@ -1,11 +1,13 @@
 """Métricas internas (sem rótulo), externas (com rótulo, só para avaliar),
-escore de risco pela distância aos centróides e estabilidade."""
+escore de risco pela distância aos centróides, estabilidade e travas."""
 import itertools
 
 import numpy as np
+from sklearn.cluster import KMeans
 from sklearn.metrics import (adjusted_rand_score, calinski_harabasz_score, davies_bouldin_score,
                              normalized_mutual_info_score, roc_auc_score, silhouette_score)
 
+from .dados import BINARIAS, CATEGORICAS
 from .pipeline import centroides
 
 
@@ -75,6 +77,76 @@ def estabilidade(lista_rotulos):
 def atalho_colesterol(rot, ausente):
     """Maior % de colesterol ausente dentro de um grupo (a marca do atalho)."""
     return float(max(ausente[rot == g].mean() for g in np.unique(rot)))
+
+
+def atalho_lift(rot, ausente):
+    """Maior % de colesterol ausente num grupo dividido pelo % da base inteira (18,7%).
+
+    1 = nenhum grupo concentra os ausentes; 5 = um grupo é quase só de ausentes.
+    """
+    base = ausente.mean()
+    return atalho_colesterol(rot, ausente) / base if base > 0 else np.nan
+
+
+def ari_registrado(rot, y, ausente):
+    """ARI só nos pacientes com colesterol registrado (o atalho não pode ajudar neles)."""
+    m = ausente == 0
+    return adjusted_rand_score(y[m], rot[m])
+
+
+def categoria_rara(rot, X, ausente, concentracao=0.90, prevalencia_max=0.20):
+    """Procura um grupo formado por uma única categoria rara.
+
+    Para cada grupo e cada categoria (categóricas, FastingBS = 1 e colesterol ausente):
+    dispara se >= `concentracao` do grupo está numa categoria que tem < `prevalencia_max`
+    na base. Devolve (disparou, descrição do pior caso).
+    """
+    colunas = {v: X[v].astype(str).to_numpy() for v in CATEGORICAS}
+    for v in BINARIAS:
+        colunas[v] = X[v].astype(str).to_numpy()
+    colunas["colesterol_ausente"] = ausente.astype(str)
+    pior, desc = 0.0, "-"
+    for v, val in colunas.items():
+        for cat in np.unique(val):
+            prev = (val == cat).mean()
+            if prev >= prevalencia_max:
+                continue
+            for g in np.unique(rot):
+                conc = (val[rot == g] == cat).mean()
+                if conc > pior:
+                    pior, desc = conc, f"grupo {g}: {conc:.0%} {v}={cat} (base {prev:.0%})"
+    return pior >= concentracao, desc
+
+
+def jaccard_grupos(ref, rot_boot, idx):
+    """Jaccard de cada grupo de referência com o grupo mais parecido da reamostra (Hennig, 2007).
+
+    ref: grupos do ajuste na base inteira; rot_boot: grupos do ajuste na reamostra;
+    idx: pacientes (sem repetição) que entraram na reamostra. Compara só nesses pacientes.
+    """
+    r, b = ref[idx], rot_boot[idx]
+    out = []
+    for g in np.unique(ref):
+        A = r == g
+        if not A.any():
+            out.append(np.nan)
+            continue
+        out.append(max((A & (b == h)).sum() / (A | (b == h)).sum() for h in np.unique(b)))
+    return out
+
+
+def silhueta_nula(Z, k, n_perm=10, semente=0):
+    """Silhueta média do K-Means em dados sem estrutura: cada coluna de Z embaralhada
+    de forma independente (preserva as distribuições, destrói as relações). Ideia da
+    estatística gap (Tibshirani et al., 2001)."""
+    rng = np.random.default_rng(semente)
+    vals = []
+    for p in range(n_perm):
+        Zp = np.column_stack([rng.permutation(Z[:, j]) for j in range(Z.shape[1])])
+        rot = KMeans(n_clusters=k, n_init=10, random_state=p).fit_predict(Zp)
+        if len(np.unique(rot)) > 1:
+            vals.append(silhouette_score(Zp, rot))
+    return float(np.mean(vals)) if vals else np.nan
 
 
 def menor_grupo(rot):

@@ -1,4 +1,4 @@
-"""Curvas de cada métrica por k (R3).
+"""Curvas de cada métrica por k (R3 e R5b), com a silhueta nula e o Jaccard mínimo.
 
 Uso:  python -m src.cotovelo                            (R3)
       python -m src.cotovelo --rodada r05b_reajuste_k    (R5b)
@@ -16,7 +16,8 @@ from .config import RESULTADOS
 
 PAINEIS = [("silhueta", "Silhueta (maior é melhor)"), ("davies_bouldin", "Davies-Bouldin (menor é melhor)"),
            ("calinski_harabasz", "Calinski-Harabasz (maior é melhor)"), ("inercia", "Inércia (cotovelo)"),
-           ("ari", "ARI com o diagnóstico (só relatado)"), ("estabilidade", "Estabilidade entre sementes")]
+           ("ari", "ARI com o diagnóstico (só relatado)"),
+           ("jaccard_min", "Jaccard do grupo menos estável (bootstrap)")]
 
 
 def main():
@@ -29,10 +30,14 @@ def main():
     for ax, (m, titulo) in zip(eixos.flat, PAINEIS):
         for init, d in r.groupby(r["init"].fillna("k-means++")):
             d = d.sort_values("k")
-            if m == "estabilidade":
+            if m == "jaccard_min":
                 ax.plot(d["k"], d[m], marker="o", label=init)
             else:
                 ax.errorbar(d["k"], d[f"{m}_media"], yerr=d[f"{m}_dp"], marker="o", capsize=3, label=init)
+            if m == "silhueta" and "silhueta_nula" in d:
+                ax.plot(d["k"], d["silhueta_nula"], ls=":", marker=".", label=f"{init} (nula)")
+        if m == "jaccard_min" and "jaccard_min" in r:
+            ax.axhline(0.75, ls="--", c="gray", lw=1)
         ax.set_title(titulo, fontsize=10)
         ax.set_xlabel("k")
         ax.grid(alpha=0.3)

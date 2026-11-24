@@ -4,9 +4,11 @@ herda_de: base
 criterio: principal   # = decisao.criterio_principal (base.yaml)
 nota: >
   standard_all padroniza também as colunas 0/1 (one-hot e FastingBS). No K-Means o
-  peso de cada coluna na distância depende da escala dela. Cuidado: uma categoria
-  rara vira um valor grande depois de padronizada e ganha peso extra; conferir no
-  perfil dos grupos (R6). A silhueta não é comparável entre escalonamentos (espaços
+  peso de cada coluna na distância depende da escala dela: uma categoria com
+  prevalência p fica com distância 1/sqrt(p(1-p)) entre "tem" e "não tem", então as
+  raras ganham peso extra (ST_Slope = Down, p = 0,07: 3,9; uma comum: 2,0). A trava
+  de categoria rara (decisao.trava_categoria) elimina opções em que um grupo é só
+  uma categoria rara. A silhueta não é comparável entre escalonamentos (espaços
   diferentes), por isso o critério é o ARI.
 
 # ordem = desempate (a primeira empatada vence)

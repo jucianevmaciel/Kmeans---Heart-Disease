@@ -1,0 +1,17 @@
+rodada: alternativa_k4
+pergunta: O que aparece nos dados com k = 4?
+herda_de: r05b_reajuste_k   # configuração final; muda só o que está em 'fixo'
+fixo:
+  modelo: {k: 4}
+nota: >
+  Análise de sensibilidade, não um segundo resultado. É a configuração que a regra
+  de decisão escolheria na R3/R5b com a trava de categoria rara em 15% ou 10%
+  (decisao.trava_categoria.prevalencia_max), em vez dos 20% adotados. Não entra na
+  cadeia de rodadas: só as análises da configuração final são refeitas, numa pasta
+  própria (results/alternativa_k4/), e comparadas com o k = 2.
+  Rodar:
+    python -m src.perfil_grupos --config configs/alternativa_k4.yaml
+    python -m src.clusters_2d   --config configs/alternativa_k4.yaml
+    python -m src.robustez      --config configs/alternativa_k4.yaml
+    python -m src.generalizacao --config configs/alternativa_k4.yaml
+    python -m src.comparar_k    --config configs/alternativa_k4.yaml

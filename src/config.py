@@ -64,25 +64,53 @@ def config_herdada(herda_de):
     - 'base'                -> configs/base.yaml
     - 'r01_escalonamento'   -> results/r01_escalonamento/vencedor.yaml
     - caminho para um .yaml -> o próprio arquivo (mesclado sobre a base)
+
+    Do vencedor só se herdam 'pre' e 'modelo'. 'sementes', 'dados' e 'decisao' vêm
+    sempre do base.yaml, então mudar esses valores vale para todas as rodadas.
     """
     if herda_de in (None, "base"):
         return base()
     if str(herda_de).endswith((".yaml", ".yml")):
-        return mesclar(base(), ler_yaml(herda_de))
-    arq = RESULTADOS / herda_de / "vencedor.yaml"
+        arq = caminho(herda_de)
+    else:
+        arq = RESULTADOS / herda_de / "vencedor.yaml"
     if not arq.exists():
         raise FileNotFoundError(
-            f"Não achei {arq.relative_to(RAIZ)}. Rode a rodada '{herda_de}' antes "
-            f"(python -m src.runner configs/{herda_de}.yaml)."
+            f"Não achei {arq.relative_to(RAIZ) if arq.is_relative_to(RAIZ) else arq}. Rode a rodada "
+            f"'{herda_de}' antes (python -m src.runner configs/{herda_de}.yaml)."
         )
-    return mesclar(base(), ler_yaml(arq))
+    v = ler_yaml(arq)
+    if v.get("herda_de"):  # análise alternativa: parte de outra configuração e muda só o 'fixo'
+        partida = config_herdada(v["herda_de"])
+        return mesclar(partida, {k: v["fixo"][k] for k in ("pre", "modelo") if k in (v.get("fixo") or {})})
+    return mesclar(base(), {k: v[k] for k in ("pre", "modelo") if k in v})
 
 
 def config_final(arg="final"):
-    """'final' = vencedor da R5b; ou o nome de uma rodada, ou um caminho de YAML."""
+    """'final' = vencedor da R5b; ou o nome de uma rodada, ou um caminho de YAML
+    (por exemplo, configs/alternativa_k4.yaml, que herda a final e muda o k)."""
     if arg in (None, "final"):
         return config_herdada("r05b_reajuste_k")
     return config_herdada(arg)
+
+
+def pasta_analise(arg_config, nome, saida=None):
+    """Pasta de saída das análises da configuração final (R6–R8).
+
+    - configuração final           -> results/<nome>                 (ex.: results/r06_perfil)
+    - --config configs/<alt>.yaml  -> results/<alt>/<nome>           (ex.: results/alternativa_k4/r06_perfil)
+    - --saida <pasta>              -> <pasta>/<nome>
+    Assim, uma análise alternativa nunca sobrescreve os resultados da configuração final.
+    """
+    if saida:
+        raiz = caminho(saida)
+    elif arg_config not in (None, "final") and str(arg_config).endswith((".yaml", ".yml")):
+        raiz = RESULTADOS / Path(arg_config).stem
+    else:
+        raiz = RESULTADOS
+    p = raiz / nome
+    p.mkdir(parents=True, exist_ok=True)
+    return p
 
 
 def carregar_rodada(arq_yaml):

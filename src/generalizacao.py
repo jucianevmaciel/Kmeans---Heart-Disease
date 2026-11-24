@@ -16,6 +16,7 @@ Limitação (registrar na metodologia): os pacientes "fora" participaram das
 escolhas das rodadas R1–R5b. A R8 mede o otimismo do ajuste, não o da seleção.
 
 Saídas em results/r08_generalizacao/: por_dobra.csv, resumo.csv, resumo.md
+(com --config configs/<alt>.yaml: results/<alt>/r08_generalizacao/)
 """
 import argparse
 import copy
@@ -28,7 +29,6 @@ from . import config, metricas
 from .dados import carregar_base, separar
 from .pipeline import ajustar, construir, espaco
 
-PASTA = config.RESULTADOS / "r08_generalizacao"
 METRICAS = ["ari", "pureza", "recall", "especificidade", "auc_escore"]
 NOMES = {"ari": "ARI", "pureza": "Acurácia (pureza)", "recall": "Recall", "especificidade": "Especificidade",
          "auc_escore": "AUC do escore"}
@@ -43,11 +43,14 @@ def _tabela(df):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="final")
+    ap.add_argument("--config", default="final",
+                    help="final (vencedor da R5b) ou um YAML, ex.: configs/alternativa_k4.yaml")
+    ap.add_argument("--saida", default=None,
+                    help="pasta raiz das saídas (padrão: results/, ou results/<yaml>/ com --config <yaml>)")
     a = ap.parse_args()
+    PASTA = config.pasta_analise(a.config, "r08_generalizacao", a.saida)
     cfg = config.config_final(a.config)
     params = config.ler_yaml("configs/r08_generalizacao.yaml")
-    PASTA.mkdir(parents=True, exist_ok=True)
 
     X, y, _, _ = separar(carregar_base())
     cv = RepeatedStratifiedKFold(n_splits=params.get("dobras", 5), n_repeats=params.get("repeticoes", 5),
@@ -95,7 +98,8 @@ def main():
     resumo.to_csv(PASTA / "resumo.csv")
     refs.to_csv(PASTA / "referencias.csv")
 
-    txt = ["# R8: a avaliação sem divisão é otimista?", "",
+    nome = "configuração final" if a.config in (None, "final") else a.config
+    txt = [f"# R8: a avaliação sem divisão é otimista? ({nome})", "",
            f"Validação cruzada estratificada {params.get('dobras', 5)}x{params.get('repeticoes', 5)}, "
            f"semente {params.get('semente_cv', 42)} (mesmo protocolo do SVM-Infarto). "
            f"{len(X)} pacientes.", "",

@@ -1,12 +1,14 @@
 rodada: R2
 pergunta: Como tratar os zeros, o atalho do colesterol e o Oldpeak negativo?
 herda_de: r01_escalonamento
-criterio: principal   # = decisao.criterio_principal (base.yaml)
+criterio: ari_registrado   # ARI só nos 746 pacientes com colesterol registrado
 nota: >
-  O colesterol registrado como 0 está ligado ao diagnóstico (no SVM, 88% dos
-  zerados eram doentes), provavelmente pelo hospital de origem. Esse atalho AUMENTA
-  o ARI. Por isso a trava: nenhuma opção vence se algum grupo tiver mais que
-  decisao.trava_atalho de pacientes com colesterol ausente.
+  O colesterol registrado como 0 está ligado ao diagnóstico (88% dos zerados são
+  doentes), provavelmente pelo hospital de origem. Esse atalho pode aumentar o ARI
+  sem nenhum motivo clínico. Por isso a rodada decide pelo ARI só nos pacientes com
+  colesterol registrado, em quem o atalho não tem como ajudar; o ARI total é
+  relatado. A trava relativa (decisao.trava_atalho_lift) e a de categoria rara
+  impedem um grupo formado pelos ausentes.
 
 opcoes:
   - nome: mediana

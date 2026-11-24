@@ -1,0 +1,11 @@
+pre:
+  zeros: mediana
+  oldpeak: manter
+  drop_cols: []
+  scaler: standard_all
+  reducao: none
+modelo:
+  algoritmo: kmeans
+  k: 2
+  init: k-means++
+  n_init: 50

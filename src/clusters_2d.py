@@ -2,6 +2,7 @@
 
 Uso:  python -m src.clusters_2d [--config final]
 Saída: results/r06_perfil/clusters_2d.png
+       (com --config configs/<alt>.yaml: results/<alt>/r06_perfil/clusters_2d.png)
 
 O PCA aqui é só para desenhar; o agrupamento foi feito no espaço completo.
 """
@@ -21,11 +22,13 @@ from .pipeline import ajustar, centroides
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="final")
+    ap.add_argument("--config", default="final",
+                    help="final (vencedor da R5b) ou um YAML, ex.: configs/alternativa_k4.yaml")
+    ap.add_argument("--saida", default=None,
+                    help="pasta raiz das saídas (padrão: results/, ou results/<yaml>/ com --config <yaml>)")
     a = ap.parse_args()
     cfg = config.config_final(a.config)
-    pasta = config.RESULTADOS / "r06_perfil"
-    pasta.mkdir(parents=True, exist_ok=True)
+    pasta = config.pasta_analise(a.config, "r06_perfil", a.saida)
 
     X, y, _, _ = separar(carregar_base())
     pipe, Z, rot = ajustar(cfg, X, y, semente=0)

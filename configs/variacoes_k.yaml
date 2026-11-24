@@ -1,0 +1,18 @@
+rodada: variacoes_k
+pergunta: O que aparece nos dados com outros valores de k?
+herda_de: r05b_reajuste_k   # configuração final; só o k varia
+nota: >
+  Análise complementar, não uma rodada de decisão. O resultado principal continua sendo
+  o k escolhido na R5b (k = 2). Aqui a configuração final é refeita com cada k da lista
+  e comparada com o k de referência: métricas na base inteira, bootstrap pareado (as
+  mesmas reamostras para todos os k), validação cruzada 5x5 (protocolo da R8),
+  composição dos grupos e situação de cada k diante das travas da regra de decisão.
+  Rodar: python -m src.variacoes_k
+  Saídas: results/variacoes_k/
+
+ks: [2, 3, 4, 5, 6, 7, 8]
+referencia_k: 2            # o k principal (vencedor da R5b)
+validacao_cruzada:         # mesmo protocolo da R8 (configs/r08_generalizacao.yaml)
+  dobras: 5
+  repeticoes: 5
+  semente_cv: 42

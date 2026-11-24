@@ -3,9 +3,10 @@ pergunta: Com a combinação final, o melhor k continua o mesmo?
 herda_de: r05_combinacao
 criterio: silhueta
 nota: >
-  Mesmo critério da R3 (silhueta; ARI só relatado), agora sobre a combinação
-  vencedora da R5. Desempate: menor k. O vencedor desta rodada é a configuração
-  final, usada em R6, R7, no teste final e na R8.
+  Mesmo critério da R3 (só k com todos os grupos estáveis; silhueta com empate pelo
+  bootstrap pareado; entre os empatados, o menor k; ARI só relatado), agora sobre a
+  combinação vencedora da R5. O vencedor desta rodada é a configuração final, usada
+  em R6, R7 e R8.
 
 grade:
   modelo.k: [2, 3, 4, 5, 6]
